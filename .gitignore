@@ -4,3 +4,16 @@ dist/
 *.jsonl
 target/
 .anchor/
+packages/signals.jsonl
+packages/attestations.jsonl
+.env
+agent.log
+api.log
+nohup.out
+packages/core/dist/
+packages/core/src/find_*.ts
+packages/core/src/check_*.ts
+packages/core/src/debug_*.ts
+packages/core/src/test_headers*.ts
+packages/core/src/activate*.ts
+packages/core/src/import_key.ts
