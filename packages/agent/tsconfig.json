@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "../",
+    "paths": {
+      "@txodds-wc/core": ["../core/src/index.ts"]
+    },
+    "baseUrl": "."
+  },
+  "include": ["src", "../core/src"],
+  "exclude": ["node_modules", "dist"]
+}

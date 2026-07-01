@@ -1,0 +1,13 @@
+{
+  "name": "txodds-worldcup",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "agent": "npm run start --workspace=packages/agent",
+    "fan": "npm run dev --workspace=packages/fan",
+    "setup": "npm run setup --workspace=packages/core"
+  }
+}
