@@ -17,3 +17,8 @@ packages/core/src/debug_*.ts
 packages/core/src/test_headers*.ts
 packages/core/src/activate*.ts
 packages/core/src/import_key.ts
+packages/attestations.jsonl
+packages/signals.jsonl
+packages/dashboard/.env.local
+packages/dashboard/dist/
+packages/dashboard/node_modules/
