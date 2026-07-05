@@ -1,58 +1,71 @@
-import { api } from "../api";
-import { usePolling } from "../usePolling";
+import type { AccuracyResponse } from "../types";
+import type { TranslationKey } from "../i18n";
 
-const POLL_INTERVAL_MS = 30_000;
+interface AccuracyProofProps {
+  data: AccuracyResponse | null;
+  isLoading: boolean;
+  t: (key: TranslationKey) => string;
+}
 
-export function AccuracyProof() {
-  const { data, isLoading } = usePolling(() => api.accuracy(), POLL_INTERVAL_MS);
-
+export function AccuracyProof({ data, isLoading, t }: AccuracyProofProps) {
   if (isLoading && !data) {
     return (
-      <div className="rounded-2xl border border-cream-300 bg-white/70 p-5">
-        <div className="h-24 animate-pulse rounded-lg bg-cream-200" />
+      <div className="rounded-md border border-white/[0.06] bg-term-card p-4">
+        <div className="h-24 animate-pulse rounded bg-white/5" />
       </div>
     );
   }
   if (!data) return null;
 
   const { verifiedMatch, keyFinding } = data;
+  const rate = verifiedMatch.totalGoals > 0
+    ? (verifiedMatch.goalsDetected / verifiedMatch.totalGoals) * 100
+    : 0;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-sage-500/20 bg-gradient-to-br from-sage-500/[0.04] to-white/70 p-5">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-ink-900">Verified Accuracy</h2>
-        <span className="rounded-full bg-sage-500/15 px-2.5 py-0.5 text-xs font-bold text-sage-500">
-          {verifiedMatch.detectionRate} detection rate
+    <div className="rounded-md border border-brand-green/20 bg-term-card p-4">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <h2 className="text-[10px] font-bold uppercase tracking-[0.15em] text-ink-muted">
+          {t("verifiedProof")}
+        </h2>
+        <span className="font-mono text-[10px] text-ink-muted">
+          {verifiedMatch.fixture} · {verifiedMatch.date}
         </span>
       </div>
 
-      <p className="mb-4 text-xs leading-relaxed text-ink-800/60">{keyFinding}</p>
+      <div className="mb-3 flex items-center gap-2 font-mono text-xs">
+        <span className="text-ink-muted">
+          {verifiedMatch.goalsDetected}/{verifiedMatch.totalGoals} {t("goalsDetected")}
+        </span>
+        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/5">
+          <div
+            className="h-full rounded-full bg-brand-green transition-[width] duration-[400ms] ease-out"
+            style={{ width: `${rate}%` }}
+          />
+        </div>
+        <span className="font-bold text-brand-green">{verifiedMatch.detectionRate}</span>
+      </div>
 
-      <div className="overflow-hidden rounded-lg border border-cream-300">
-        <table className="w-full text-left text-xs">
+      <div className="overflow-hidden rounded border border-white/[0.06]">
+        <table className="w-full text-left font-mono text-[11px]">
           <thead>
-            <tr className="bg-cream-200/70 text-[10px] uppercase tracking-wide text-ink-800/50">
-              <th className="px-3 py-2 font-medium">Goal Time</th>
-              <th className="px-3 py-2 font-medium">Signals</th>
-              <th className="px-3 py-2 font-medium">Max Conf.</th>
-              <th className="px-3 py-2 font-medium">Max Shift</th>
-              <th className="px-3 py-2 font-medium">Detected Before Goal</th>
+            <tr className="bg-white/[0.03] text-[9px] uppercase tracking-wide text-ink-muted">
+              <th className="px-2 py-1.5 font-medium">Time</th>
+              <th className="px-2 py-1.5 font-medium">{t("signals")}</th>
+              <th className="px-2 py-1.5 font-medium">{t("conf")}.</th>
+              <th className="px-2 py-1.5 font-medium">Shift</th>
+              <th className="px-2 py-1.5 font-medium">{t("signalsBefore")}</th>
             </tr>
           </thead>
           <tbody>
             {verifiedMatch.results.map((r, idx) => (
-              <tr
-                key={r.goalTime}
-                className={idx % 2 === 0 ? "bg-white/60" : "bg-cream-50/60"}
-              >
-                <td className="px-3 py-2 font-mono text-ink-900">{r.goalTime}</td>
-                <td className="px-3 py-2 font-mono text-ink-800/60">{r.signalsNear}</td>
-                <td className="px-3 py-2 font-mono font-semibold text-sage-500">
-                  {r.maxConfidence}
-                </td>
-                <td className="px-3 py-2 font-mono text-ink-800/60">{r.maxShift}</td>
-                <td className="px-3 py-2 font-mono font-semibold text-coral-600">
-                  {r.firstSignalBeforeGoal}
+              <tr key={r.goalTime} className={idx % 2 === 0 ? "bg-white/[0.015]" : ""}>
+                <td className="px-2 py-1.5 text-ink">{r.goalTime}</td>
+                <td className="px-2 py-1.5 text-ink-muted">{r.signalsNear}</td>
+                <td className="px-2 py-1.5 font-bold text-brand-green">{r.maxConfidence}</td>
+                <td className="px-2 py-1.5 text-ink-muted">{r.maxShift}</td>
+                <td className="px-2 py-1.5 font-bold text-brand-amber">
+                  {r.firstSignalBeforeGoal} ⚡
                 </td>
               </tr>
             ))}
@@ -60,10 +73,7 @@ export function AccuracyProof() {
         </table>
       </div>
 
-      <div className="mt-3 text-[11px] text-ink-800/40">
-        {verifiedMatch.fixture} · {verifiedMatch.date} · {verifiedMatch.goalsDetected}/
-        {verifiedMatch.totalGoals} goals detected
-      </div>
+      <div className="mt-2 text-[10px] leading-relaxed text-ink-muted">⚡ {keyFinding}</div>
     </div>
   );
 }

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="80" fill="#080A0F"/>
+  <polygon points="256,80 296,176 400,176 316,236 346,336 256,276 166,336 196,236 112,176 216,176" fill="#00D395"/>
+  <text x="256" y="440" text-anchor="middle" font-family="monospace" font-size="120" font-weight="bold" fill="#E6EDF3">Dale</text>
+</svg>

@@ -4,52 +4,48 @@ export default {
   theme: {
     extend: {
       colors: {
-        cream: {
-          50: "#FDFCFA",
-          100: "#FAF9F5",
-          200: "#F4F2EB",
-          300: "#EAE7DC",
+        term: {
+          bg: "#080A0F",
+          card: "#0D1117",
         },
         ink: {
-          800: "#2B2922",
-          900: "#1F1D17",
+          DEFAULT: "#E6EDF3",
+          muted: "rgba(230,237,243,0.45)",
         },
-        coral: {
-          400: "#E08B6B",
-          500: "#D97757",
-          600: "#C3633F",
-        },
-        sage: {
-          400: "#7C9885",
-          500: "#5F8170",
-        },
-        amber: {
-          400: "#D9A441",
-          500: "#C28E2E",
+        brand: {
+          green: "#00D395",
+          red: "#FF4D4D",
+          amber: "#F0A500",
+          blue: "#3B82F6",
         },
       },
       fontFamily: {
-        sans: [
-          "Inter",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "sans-serif",
-        ],
         mono: ["JetBrains Mono", "Menlo", "monospace"],
+        sans: ["JetBrains Mono", "Menlo", "monospace"],
       },
       animation: {
-        "fade-in": "fadeIn 0.4s ease-out",
-        "pulse-soft": "pulseSoft 2s ease-in-out infinite",
+        marquee: "marquee 60s linear infinite",
+        slideInFromTop: "slideInFromTop 0.3s ease-out",
+        pulseGlow: "pulseGlow 2s ease-in-out infinite",
       },
       keyframes: {
-        fadeIn: {
-          "0%": { opacity: "0", transform: "translateY(-6px)" },
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        slideInFromTop: {
+          "0%": { opacity: "0", transform: "translateY(-8px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        pulseSoft: {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.5" },
+        pulseGlow: {
+          "0%, 100%": {
+            opacity: "1",
+            boxShadow: "0 0 0 0 rgba(0,211,149,0.4)",
+          },
+          "50%": {
+            opacity: "0.6",
+            boxShadow: "0 0 8px 2px rgba(0,211,149,0.4)",
+          },
         },
       },
     },
