@@ -8,7 +8,11 @@ import { computeBacktestReport } from "../../agent/src/backtester";
 import { loadAttestations } from "../../agent/src/attestation_store";
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
 
 const SIGNALS_FILE = process.env.SIGNALS_FILE ?? path.join(__dirname, "../../signals.jsonl");
