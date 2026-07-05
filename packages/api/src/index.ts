@@ -11,7 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const SIGNALS_FILE = path.join(__dirname, "../../signals.jsonl");
+const SIGNALS_FILE = process.env.SIGNALS_FILE ?? path.join(__dirname, "../../signals.jsonl");
 
 // ─── Rate limiting (100 req/min per IP) ──────────────────────────────────────
 
