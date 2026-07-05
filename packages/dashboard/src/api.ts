@@ -26,7 +26,9 @@ class ApiError extends Error {
 }
 
 async function getJson<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`);
+  const res = await fetch(`${API_BASE}${path}`, {
+    headers: { "ngrok-skip-browser-warning": "true" }
+  });
   if (!res.ok) {
     throw new ApiError(`Request failed: ${path}`, res.status);
   }

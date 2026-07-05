@@ -10,9 +10,14 @@ import { loadAttestations } from "../../agent/src/attestation_store";
 const app = express();
 app.use(cors({
   origin: "*",
-  methods: ["GET", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  methods: ["GET", "OPTIONS", "HEAD"],
+  allowedHeaders: ["Content-Type", "Authorization", "ngrok-skip-browser-warning"]
 }));
+app.use((_req, res, next) => {
+  res.setHeader("ngrok-skip-browser-warning", "true");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+});
 app.use(express.json());
 
 const SIGNALS_FILE = process.env.SIGNALS_FILE ?? path.join(__dirname, "../../signals.jsonl");
