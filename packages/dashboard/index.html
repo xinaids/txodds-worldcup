@@ -1,24 +1,1095 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dale — Sharp Odds Intelligence</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="theme-color" content="#080A0F" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Dale" />
-    <link rel="apple-touch-icon" href="/icon.svg" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>dale! — Inteligência de Movimento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<style>
+/* ============================================================
+   dale! — Design System
+   void #050505 · glass · hairlines · lime #D7FF00 · white text
+   display: Chakra Petch · ui: Inter · data: JetBrains Mono
+   ============================================================ */
+:root{
+  --void:#050505;
+  --lime:#D7FF00;
+  --lime-2:#E8FF5A;
+  --white:#FFFFFF;
+  --muted:rgba(255,255,255,.52);
+  --faint:rgba(255,255,255,.34);
+  --ghost:rgba(255,255,255,.16);
+  --line:rgba(255,255,255,.08);
+  --line-2:rgba(255,255,255,.13);
+  --glass:rgba(255,255,255,.035);
+  --glass-2:rgba(255,255,255,.06);
+  --red:#FF5A3C;
+  --limeglow:rgba(215,255,0,.14);
+  --r:18px;
+  --font-d:"Chakra Petch",sans-serif;
+  --font-b:"Inter",sans-serif;
+  --font-m:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--void);
+  color:var(--white);
+  font-family:var(--font-b);
+  min-height:100vh;
+  overflow-x:hidden;
+  display:flex;justify-content:center;
+  /* ambient stage behind the "phone" on desktop */
+  background-image:
+    radial-gradient(70% 42% at 50% -8%, rgba(215,255,0,.05), transparent 70%),
+    radial-gradient(50% 40% at 100% 100%, rgba(215,255,0,.03), transparent 70%);
+}
+
+/* ---- device shell (mobile-first, framed on desktop) ---- */
+.app{
+  position:relative;width:100%;max-width:430px;min-height:100vh;
+  background:var(--void);overflow:hidden;
+  background-image:
+    radial-gradient(120% 60% at 50% -10%, rgba(215,255,0,.06), transparent 60%),
+    linear-gradient(rgba(255,255,255,.014) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);
+  background-size:100% 100%, 34px 34px, 34px 34px;
+}
+@media(min-width:520px){
+  body{align-items:center;padding:26px 0}
+  .app{min-height:calc(100vh - 52px);max-height:920px;border-radius:40px;
+    border:1px solid rgba(255,255,255,.10);
+    box-shadow:0 40px 120px -30px rgba(0,0,0,.9), 0 0 0 8px #0b0b0a, 0 0 0 9px rgba(255,255,255,.05);
+    overflow:hidden}
+  .scroll{border-radius:40px}
+}
+
+/* ---- scroll area ---- */
+.scroll{height:100vh;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;
+  padding-bottom:104px;scrollbar-width:none}
+@media(min-width:520px){.scroll{height:100%;max-height:918px}}
+.scroll::-webkit-scrollbar{display:none}
+
+/* ============ TOP BAR ============ */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px 13px;
+  background:linear-gradient(180deg, rgba(5,5,5,.92) 40%, rgba(5,5,5,.55) 100%);
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  border-bottom:1px solid var(--line);
+}
+.brand{font-family:var(--font-d);font-weight:700;font-size:23px;letter-spacing:-.02em;
+  display:flex;align-items:baseline;gap:0;line-height:1}
+.brand b{font-weight:700}
+.brand .bang{color:var(--lime);position:relative;margin-left:1px}
+.brand .bang::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);
+  width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime)}
+
+.live{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:6px 11px 6px 9px;border-radius:999px;
+  border:1px solid rgba(215,255,0,.28);background:rgba(215,255,0,.07);
+  font-family:var(--font-m);font-weight:700;font-size:10px;letter-spacing:.14em;
+  color:var(--lime);text-transform:uppercase;
+}
+.live .pip{width:6px;height:6px;border-radius:50%;background:var(--lime);
+  box-shadow:0 0 0 0 rgba(215,255,0,.6);animation:pulse 1.9s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(215,255,0,.55)}70%{box-shadow:0 0 0 7px rgba(215,255,0,0)}100%{box-shadow:0 0 0 0 rgba(215,255,0,0)}}
+
+.bell{position:relative;width:38px;height:38px;border-radius:12px;
+  border:1px solid var(--line-2);background:var(--glass);
+  display:grid;place-items:center;color:var(--white);cursor:pointer;transition:.18s}
+.bell:active{transform:scale(.92)}
+.bell svg{width:18px;height:18px}
+.bell .dot{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;
+  background:var(--lime);box-shadow:0 0 8px var(--lime);animation:pulse 2.2s infinite}
+
+/* ============ SECTION SCAFFOLD ============ */
+.pane{display:none;padding:18px 16px 0}
+.pane.on{display:block;animation:fade .34s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.eyebrow{font-family:var(--font-m);font-weight:700;font-size:10.5px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--faint);display:flex;align-items:center;gap:8px}
+.eyebrow .lm{color:var(--lime)}
+.eyebrow .ln{flex:1;height:1px;background:var(--line)}
+
+/* ============ HERO CARD ============ */
+.hero{
+  position:relative;margin-bottom:14px;border-radius:24px;overflow:hidden;
+  border:1px solid rgba(215,255,0,.22);
+  background:
+    radial-gradient(120% 90% at 88% 0%, rgba(215,255,0,.10), transparent 55%),
+    linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 24px 60px -30px rgba(215,255,0,.18), inset 0 1px 0 rgba(255,255,255,.06);
+  padding:18px 18px 16px;
+}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.hero .sig{font-family:var(--font-m);font-weight:700;font-size:10px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--lime);display:inline-flex;align-items:center;gap:7px}
+.hero .sig .flash{display:inline-block;color:var(--lime)}
+.hero h1{font-family:var(--font-d);font-weight:700;font-size:29px;line-height:1.02;
+  letter-spacing:-.015em;margin:11px 0 0;max-width:15ch}
+.hero h1 .hl{color:var(--lime)}
+
+/* radar */
+.radar{position:relative;width:82px;height:82px;flex:none}
+.radar svg{width:100%;height:100%;overflow:visible}
+.radar .ring{fill:none;stroke:rgba(215,255,0,.20);stroke-width:1}
+.radar .cross{stroke:rgba(215,255,0,.14);stroke-width:1}
+.radar .sweep{transform-origin:41px 41px;animation:spin 3.4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.radar .blip{fill:var(--lime);filter:drop-shadow(0 0 6px var(--lime))}
+.radar .ping{fill:none;stroke:var(--lime);stroke-width:1.4;transform-origin:center;
+  animation:ping 2.6s ease-out infinite}
+@keyframes ping{0%{r:4;opacity:.9}80%{opacity:0}100%{r:40;opacity:0}}
+
+/* match strip */
+.match{display:flex;align-items:center;gap:12px;margin-top:16px;
+  padding:12px;border-radius:15px;border:1px solid var(--line);
+  background:rgba(0,0,0,.28)}
+.team{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.team.r{justify-content:flex-end}
+.flag{width:26px;height:26px;border-radius:8px;flex:none;display:grid;place-items:center;
+  font-size:15px;background:rgba(255,255,255,.06);border:1px solid var(--line-2)}
+.team b{font-family:var(--font-d);font-weight:600;font-size:15px;letter-spacing:.01em;white-space:nowrap}
+.vs{font-family:var(--font-m);font-size:11px;color:var(--faint);font-weight:600}
+.when{font-family:var(--font-m);font-size:10.5px;color:var(--muted);text-align:center;
+  margin-top:2px;letter-spacing:.05em}
+
+/* confidence block */
+.confrow{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-top:16px}
+.conf .k{font-family:var(--font-m);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.conf .v{font-family:var(--font-m);font-weight:800;font-size:52px;line-height:.9;letter-spacing:-.02em;
+  color:var(--lime);text-shadow:0 0 30px rgba(215,255,0,.35);font-variant-numeric:tabular-nums}
+.conf .v small{font-size:22px;font-weight:700;margin-left:2px}
+.spark{width:120px;height:42px;flex:none}
+.spark path.l{fill:none;stroke:var(--lime);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 1px 6px rgba(215,255,0,.4))}
+.spark path.a{fill:url(#sparkg);opacity:.5}
+
+/* ============ METRIC PANELS ============ */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:2px}
+.metric{
+  position:relative;border-radius:16px;padding:14px 14px 12px;
+  border:1px solid var(--line);background:var(--glass);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);overflow:hidden;
+  transition:transform .2s, border-color .2s;
+}
+.metric:active{transform:scale(.985)}
+.metric::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(215,255,0,.4),transparent);opacity:.5}
+.metric .lab{font-family:var(--font-m);font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--faint);display:flex;align-items:center;gap:6px}
+.metric .lab .i{color:var(--lime);display:inline-flex}
+.metric .num{font-family:var(--font-m);font-weight:800;font-size:31px;line-height:1;margin-top:11px;
+  letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:var(--white)}
+.metric .num u{font-style:normal;font-size:14px;color:var(--muted);margin-left:2px;font-weight:600}
+.metric.lime .num{color:var(--lime)}
+.metric .sub{font-family:var(--font-m);font-size:10px;color:var(--muted);margin-top:5px;letter-spacing:.03em}
+.metric .track{height:4px;border-radius:99px;background:rgba(255,255,255,.07);margin-top:10px;overflow:hidden}
+.metric .fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--lime),var(--lime-2));
+  box-shadow:0 0 10px rgba(215,255,0,.5);width:0;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+.metric .bars{display:flex;align-items:flex-end;gap:3px;height:22px;margin-top:8px}
+.metric .bars i{flex:1;background:rgba(215,255,0,.5);border-radius:2px;transform-origin:bottom;
+  animation:eq 1.1s ease-in-out infinite}
+@keyframes eq{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+
+/* ============ SECTION HEADER (in-pane) ============ */
+.sec{margin-top:22px}
+.sec>.eyebrow{margin-bottom:12px}
+.card{border-radius:18px;border:1px solid var(--line);background:var(--glass);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:16px}
+
+/* ============ FLUXO (line chart) ============ */
+.flux{padding:16px 14px 10px}
+.flux-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding:0 2px}
+.flux-head .t{font-family:var(--font-d);font-weight:600;font-size:15px}
+.flux-head .d{font-family:var(--font-m);font-size:10px;color:var(--muted);letter-spacing:.05em}
+.chart{width:100%;height:150px;display:block}
+.chart .grid line{stroke:rgba(255,255,255,.05)}
+.chart .line{fill:none;stroke:var(--lime);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 2px 10px rgba(215,255,0,.35));
+  stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 1.8s .2s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.chart .area{fill:url(#areag);opacity:0;animation:areaIn .8s 1.2s ease forwards}
+@keyframes areaIn{to{opacity:.55}}
+.chart .pt{fill:var(--void);stroke:var(--lime);stroke-width:2}
+.chart .peak{fill:var(--lime);filter:drop-shadow(0 0 8px var(--lime))}
+.tag{fill:var(--lime)}
+.tag-txt{font-family:var(--font-m);font-weight:800;font-size:9px;fill:var(--void);letter-spacing:.08em}
+.axis{font-family:var(--font-m);font-size:9px;fill:var(--faint);letter-spacing:.04em}
+.flux-legend{display:flex;gap:16px;padding:8px 4px 2px;flex-wrap:wrap}
+.flux-legend span{font-family:var(--font-m);font-size:9.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.flux-legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+/* ============ EVENTOS (feed) ============ */
+.feed{display:flex;flex-direction:column;gap:9px}
+.ev{
+  display:flex;align-items:center;gap:13px;padding:13px 14px;border-radius:15px;
+  border:1px solid var(--line);background:var(--glass);position:relative;overflow:hidden;
+}
+.ev.new{animation:slideIn .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes slideIn{from{opacity:0;transform:translateY(-10px) scale(.99)}to{opacity:1;transform:none}}
+.ev::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--lime);opacity:.85}
+.ev.alert::before{background:var(--red)}
+.ev .ic{width:38px;height:38px;border-radius:11px;flex:none;display:grid;place-items:center;
+  font-size:17px;background:rgba(215,255,0,.10);border:1px solid rgba(215,255,0,.22)}
+.ev.alert .ic{background:rgba(255,90,60,.10);border-color:rgba(255,90,60,.28)}
+.ev .body{flex:1;min-width:0}
+.ev .body .h{font-family:var(--font-d);font-weight:600;font-size:14px;letter-spacing:.01em}
+.ev .body .s{font-family:var(--font-b);font-size:11.5px;color:var(--muted);margin-top:2px}
+.ev .meta{text-align:right;flex:none}
+.ev .meta .tm{font-family:var(--font-m);font-weight:700;font-size:12px;color:var(--white);font-variant-numeric:tabular-nums}
+.ev .meta .cf{font-family:var(--font-m);font-size:9.5px;color:var(--lime);letter-spacing:.06em;margin-top:2px}
+.ev.alert .meta .cf{color:var(--red)}
+
+/* ============ PARTIDAS ============ */
+.mrow{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:15px;
+  border:1px solid var(--line);background:var(--glass);margin-bottom:9px;transition:.18s}
+.mrow:active{transform:scale(.99)}
+.mrow .rk{font-family:var(--font-m);font-weight:800;font-size:12px;color:var(--faint);width:22px;flex:none}
+.mrow .info{flex:1;min-width:0}
+.mrow .info .n{font-family:var(--font-d);font-weight:600;font-size:14.5px;letter-spacing:.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mrow .info .sc{font-family:var(--font-m);font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.04em}
+.mrow .track2{height:4px;border-radius:99px;background:rgba(255,255,255,.07);margin-top:8px;overflow:hidden}
+.mrow .fill2{height:100%;border-radius:99px;background:linear-gradient(90deg,rgba(215,255,0,.5),var(--lime))}
+.mrow .badge{font-family:var(--font-m);font-weight:800;font-size:9px;letter-spacing:.08em;
+  padding:5px 8px;border-radius:8px;flex:none;text-transform:uppercase}
+.b-goal{color:var(--lime);background:rgba(215,255,0,.12);border:1px solid rgba(215,255,0,.25)}
+.b-drift{color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.b-red{color:var(--red);background:rgba(255,90,60,.10);border:1px solid rgba(255,90,60,.25)}
+
+/* proof callout */
+.proof{margin-top:14px;border-radius:16px;border:1px solid rgba(215,255,0,.2);
+  background:linear-gradient(180deg,rgba(215,255,0,.06),transparent);padding:15px}
+.proof .h{font-family:var(--font-d);font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px}
+.proof .row{display:flex;align-items:center;gap:10px;margin-top:12px}
+.proof .big{font-family:var(--font-m);font-weight:800;font-size:34px;color:var(--lime);
+  letter-spacing:-.02em;line-height:1;text-shadow:0 0 24px rgba(215,255,0,.3)}
+.proof .cap{font-family:var(--font-b);font-size:11.5px;color:var(--muted);line-height:1.5}
+.proof .lead{font-family:var(--font-m);font-size:10px;color:var(--faint);margin-top:12px;letter-spacing:.03em}
+.proof .lead b{color:var(--lime)}
+
+/* stat strip */
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:2px 0 4px}
+.stat{border-radius:14px;border:1px solid var(--line);background:var(--glass);padding:12px 10px;text-align:center}
+.stat .v{font-family:var(--font-m);font-weight:800;font-size:19px;font-variant-numeric:tabular-nums}
+.stat .v.lm{color:var(--lime)}
+.stat .l{font-family:var(--font-m);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+
+/* ============ BOTTOM NAV ============ */
+.nav{
+  position:fixed;left:50%;bottom:0;transform:translateX(-50%);
+  width:100%;max-width:430px;z-index:50;
+  display:flex;padding:9px 14px calc(9px + env(safe-area-inset-bottom));
+  background:linear-gradient(0deg, rgba(5,5,5,.96) 55%, rgba(5,5,5,.4));
+  backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);
+  border-top:1px solid var(--line);gap:4px;
+}
+@media(min-width:520px){.nav{bottom:26px;border-radius:0 0 40px 40px}}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:8px 0 6px;border:0;background:none;cursor:pointer;color:var(--faint);
+  font-family:var(--font-m);font-weight:700;font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  border-radius:12px;transition:.18s;position:relative}
+.tab svg{width:21px;height:21px}
+.tab.on{color:var(--lime)}
+.tab.on::before{content:"";position:absolute;top:1px;width:5px;height:5px;border-radius:50%;
+  background:var(--lime);box-shadow:0 0 8px var(--lime)}
+.tab:active{transform:scale(.9)}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;stroke-dashoffset:0!important}
+}
+
+/* ============ LOCALE SWITCHER ============ */
+.locale-btn{position:relative;height:38px;padding:0 12px;border-radius:12px;
+  border:1px solid var(--line-2);background:var(--glass);
+  display:grid;place-items:center;color:var(--white);cursor:pointer;transition:.18s;
+  font-family:var(--font-m);font-weight:700;font-size:11px;letter-spacing:.08em}
+.locale-btn:active{transform:scale(.92)}
+
+</style>
+
+<div class="app">
+  <div class="scroll" id="scroll">
+
+    <!-- ======= TOP BAR ======= -->
+    <header class="topbar">
+      <div class="brand"><b>dale</b><span class="bang">!</span></div>
+      <div class="live"><span class="pip"></span> <span data-i18n="liveIndicator">IA ao vivo</span></div>
+      <button class="locale-btn" id="locale-btn-mobile">PT</button>
+      <button class="bell" aria-label="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 1 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        <span class="dot"></span>
+      </button>
+    </header>
+
+    <!-- ======= PANE: SINAL (home) ======= -->
+    <section class="pane on" id="p-sinal">
+      <div class="eyebrow" style="margin-bottom:12px"><span class="lm">◍</span> <span data-i18n="signalDetected">Sinal detectado</span> <span class="ln"></span> <span style="color:var(--faint)"><span id="hero-when">—</span></span></div>
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="sig"><span class="flash">⚡</span> <span data-i18n="unusualMovement">Movimento incomum</span></div>
+            <h1 data-i18n="unusualMovementBody">Movimento incomum <span class="hl">encontrado.</span></h1>
+          </div>
+          <div class="radar" aria-hidden="true">
+            <svg viewBox="0 0 82 82">
+              <circle class="ring" cx="41" cy="41" r="40"/>
+              <circle class="ring" cx="41" cy="41" r="27"/>
+              <circle class="ring" cx="41" cy="41" r="14"/>
+              <line class="cross" x1="41" y1="1" x2="41" y2="81"/>
+              <line class="cross" x1="1" y1="41" x2="81" y2="41"/>
+              <g class="sweep">
+                <defs><linearGradient id="sw" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="rgba(215,255,0,0)"/><stop offset="1" stop-color="rgba(215,255,0,.35)"/>
+                </linearGradient></defs>
+                <path d="M41 41 L41 1 A40 40 0 0 1 79 47 Z" fill="url(#sw)"/>
+                <line x1="41" y1="41" x2="41" y2="1" stroke="var(--lime)" stroke-width="1.5"/>
+              </g>
+              <circle class="ping" cx="58" cy="30"/>
+              <circle class="blip" cx="58" cy="30" r="3"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- match -->
+        <div class="match" id="hero-match">
+          <div class="team"><span class="flag">—</span><b>—</b></div>
+          <div style="text-align:center"><div class="vs">VS</div></div>
+          <div class="team r"><b>—</b><span class="flag">—</span></div>
+        </div>
+        <div class="when" id="hero-when-strip">—</div>
+
+        <!-- confidence -->
+        <div class="confrow">
+          <div class="conf">
+            <div class="k" data-i18n="aiConfidence">Confiança da IA</div>
+            <div class="v"><span id="confN">0</span><small>%</small></div>
+          </div>
+          <svg class="spark" viewBox="0 0 120 42" preserveAspectRatio="none">
+            <defs><linearGradient id="sparkg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="rgba(215,255,0,.4)"/><stop offset="1" stop-color="rgba(215,255,0,0)"/>
+            </linearGradient></defs>
+            <path class="a" d="M0 34 L10 32 L20 33 L30 28 L40 30 L50 24 L60 26 L70 18 L80 20 L90 12 L100 14 L110 7 L120 4 L120 42 L0 42 Z"/>
+            <path class="l" d="M0 34 L10 32 L20 33 L30 28 L40 30 L50 24 L60 26 L70 18 L80 20 L90 12 L100 14 L110 7 L120 4"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- METRIC PANELS -->
+      <div class="grid">
+        <div class="metric lime">
+          <div class="lab"><span class="i">◎</span> <span data-i18n="signalConfidence">Confiança do sinal</span></div>
+          <div class="num"><span id="m1">—</span><u>%</u></div>
+          <div class="track"><div class="fill" data-w="0"></div></div>
+        </div>
+        <div class="metric">
+          <div class="lab"><span class="i">↯</span> <span data-i18n="intensity">Intensidade</span></div>
+          <div class="num"><span id="m2">—</span><u>%</u></div>
+          <div class="bars"><i style="animation-delay:0s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.15s"></i><i style="animation-delay:.05s"></i><i style="animation-delay:.25s"></i><i style="animation-delay:.12s"></i></div>
+        </div>
+        <div class="metric lime">
+          <div class="lab"><span class="i">◷</span> <span data-i18n="leadTime">Antecedência</span></div>
+          <div class="num"><span id="m3">01:58</span></div>
+          <div class="sub" data-i18n="beforeScore">antes do placar mudar</div>
+        </div>
+        <div class="metric">
+          <div class="lab"><span class="i">≋</span> <span data-i18n="detectedVolume">Volume detectado</span></div>
+          <div class="num"><span id="m4">—</span></div>
+          <div class="sub" id="m4-sub">—</div>
+        </div>
+      </div>
+
+      <!-- mini fluxo -->
+      <div class="sec">
+        <div class="eyebrow"><span class="lm">/</span> <span data-i18n="gameFlow">Fluxo do jogo</span> <span class="ln"></span></div>
+        <div class="card flux" style="padding:14px 12px 8px">
+          <svg class="chart" viewBox="0 0 340 150" preserveAspectRatio="none" id="mini-chart"></svg>
+          <div class="flux-legend">
+            <span><i style="background:var(--lime)"></i> <span data-i18n="movDetected">Movimento detectado</span></span>
+            <span><i style="background:rgba(255,255,255,.4)"></i> <span data-i18n="changePoints">Pontos de mudança</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- mini eventos -->
+      <div class="sec">
+        <div class="eyebrow"><span class="lm">≡</span> <span data-i18n="detectedEvents">Eventos detectados</span> <span class="ln"></span></div>
+        <div class="feed" id="mini-feed"></div>
+      </div>
+
+    </section>
+
+    <!-- ======= PANE: FLUXO ======= -->
+    <section class="pane" id="p-fluxo">
+      <div class="eyebrow" style="margin-bottom:14px"><span class="lm">/</span> <span data-i18n="gameFlow">Fluxo do jogo</span> <span class="ln"></span> <span style="color:var(--faint)" id="fluxo-fixture">—</span></div>
+      <div class="card flux">
+        <div class="flux-head"><span class="t" data-i18n="impliedProb">Probabilidade implícita</span><span class="d" data-i18n="last30">últimos 30 min</span></div>
+        <svg class="chart" viewBox="0 0 340 150" preserveAspectRatio="none" id="big-chart"></svg>
+        <div class="flux-legend">
+          <span><i style="background:var(--lime)"></i> <span data-i18n="marketConsensusLabel">Consenso do mercado</span></span>
+          <span><i style="background:rgba(255,255,255,.4)"></i> <span data-i18n="changePoints">Pontos de mudança</span></span>
+          <span><i style="background:var(--lime);box-shadow:0 0 8px var(--lime)"></i> <span data-i18n="signalFired">Sinal disparado</span></span>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="eyebrow"><span class="lm">▦</span> <span data-i18n="telemetry">Painel de telemetria</span> <span class="ln"></span></div>
+        <div class="grid" style="margin-top:12px">
+          <div class="metric"><div class="lab"><span class="i">◈</span> <span data-i18n="maxShift">Shift máximo</span></div><div class="num lime" style="color:var(--lime)">—<u>%</u></div><div class="sub" id="max-shift-sub">—</div></div>
+          <div class="metric"><div class="lab"><span class="i">⇄</span> <span data-i18n="markets">Mercados</span></div><div class="num">9<u>/9</u></div><div class="sub" data-i18n="marketConsensus">em concordância</div></div>
+          <div class="metric"><div class="lab"><span class="i">◷</span> <span data-i18n="latency">Latência</span></div><div class="num">111<u>s</u></div><div class="sub" data-i18n="aheadFeed">à frente do feed</div></div>
+          <div class="metric"><div class="lab"><span class="i">≋</span> <span data-i18n="ticksMin">Ticks/min</span></div><div class="num">1.4<u>k</u></div><div class="sub" data-i18n="samplingRate">taxa de amostragem</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= PANE: EVENTOS ======= -->
+    <section class="pane" id="p-eventos">
+      <div class="eyebrow" style="margin-bottom:14px"><span class="lm">≡</span> <span data-i18n="detectedEvents">Eventos detectados</span> <span class="ln"></span> <span style="color:var(--lime)" id="ev-count">ao vivo</span></div>
+      <div class="stats3">
+        <div class="stat"><div class="v" id="s-total">—</div><div class="l" data-i18n="signals">Sinais</div></div>
+        <div class="stat"><div class="v lm">100%</div><div class="l" data-i18n="goals">Gols</div></div>
+        <div class="stat"><div class="v">57</div><div class="l" data-i18n="matches">Partidas</div></div>
+      </div>
+      <div class="feed" id="full-feed" style="margin-top:14px"></div>
+    </section>
+
+    <!-- ======= PANE: PARTIDAS ======= -->
+    <section class="pane" id="p-partidas">
+      <div class="eyebrow" style="margin-bottom:14px"><span class="lm">◫</span> <span data-i18n="activeMatches">Partidas ativas</span> <span class="ln"></span> <span style="color:var(--faint)">12</span></div>
+      <div id="match-list"></div>
+
+      <div class="proof">
+        <div class="h">✓ <span data-i18n="verifiedProof">Prova verificada</span></div>
+        <div class="row">
+          <div class="big">4/4</div>
+          <div class="cap"><span data-i18n="goalsDetected">gols detectados em</span> <b style="color:#fff">Noruega × França</b><br>26 jun 2026 · <span data-i18n="detectionRate">taxa de detecção</span> 100%</div>
+        </div>
+        <div class="lead"><span data-i18n="aheadFeedMsg">Sinais precederam o feed oficial em</span> <b>111–120s</b> · <span data-i18n="immutable">registro imutável e auditável</span></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ======= BOTTOM NAV ======= -->
+  <nav class="nav">
+    <button class="tab on" data-p="sinal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/><circle cx="12" cy="12" r="8" opacity=".4"/></svg>
+      <span data-i18n="navSignal">Sinal</span>
+    </button>
+    <button class="tab" data-p="fluxo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 17l5-6 4 3 5-8 4 5"/></svg>
+      <span data-i18n="navFlow">Fluxo</span>
+    </button>
+    <button class="tab" data-p="eventos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
+      <span data-i18n="navEvents">Eventos</span>
+    </button>
+    <button class="tab" data-p="partidas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18" opacity=".45"/></svg>
+      <span data-i18n="navMatches">Partidas</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+/* ============================================================
+   Dale! — Live Data Engine
+   API: https://txodds-worldcup.onrender.com
+   ============================================================ */
+const API = location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://txodds-worldcup.onrender.com';
+const POLL = { clusters: 3000, stats: 10000, health: 5000, accuracy: 60000, fixtures: 8000 };
+
+/* ---------- i18n ---------- */
+const I18N = {
+  pt: {
+    appTagline: 'A IA que vê o movimento antes de todo mundo.',
+    liveIndicator: 'IA ao vivo',
+    signalDetected: 'Sinal detectado',
+    unusualMovement: 'Movimento incomum',
+    unusualMovementBody: 'Movimento incomum encontrado.',
+    aiConfidence: 'Confiança da IA',
+    signalConfidence: 'Confiança do sinal',
+    intensity: 'Intensidade',
+    leadTime: 'Antecedência',
+    beforeScore: 'antes do placar mudar',
+    detectedVolume: 'Volume detectado',
+    gameFlow: 'Fluxo do jogo',
+    impliedProb: 'Probabilidade implícita',
+    last30: 'últimos 30 min',
+    telemetry: 'Painel de telemetria',
+    maxShift: 'Shift máximo',
+    markets: 'Mercados',
+    marketConsensus: 'em concordância',
+    latency: 'Latência',
+    aheadFeed: 'à frente do feed',
+    ticksMin: 'Ticks/min',
+    samplingRate: 'taxa de amostragem',
+    detectedEvents: 'Eventos detectados',
+    signals: 'Sinais',
+    goals: 'Gols',
+    matches: 'Partidas',
+    activeMatches: 'Partidas ativas',
+    verifiedProof: 'Prova verificada',
+    goalsDetected: 'gols detectados em',
+    detectionRate: 'taxa de detecção',
+    immutable: 'registro imutável e auditável',
+    aheadFeedMsg: 'Sinais precederam o feed oficial em',
+    navSignal: 'Sinal',
+    navFlow: 'Fluxo',
+    navEvents: 'Eventos',
+    navMatches: 'Partidas',
+    connecting: 'conectando à api...',
+    watching: 'Motor monitorando — sem jogos ao vivo agora',
+    movDetected: 'Movimento detectado',
+    changePoints: 'Pontos de mudança',
+    signalFired: 'Sinal disparado',
+    marketConsensusLabel: 'Consenso do mercado',
+    apiOffline: 'Motor Offline',
+    uptime: 'Uptime',
+    now: 'agora',
+    live: 'ao vivo',
+  },
+  en: {
+    appTagline: 'The AI that sees the movement first.',
+    liveIndicator: 'AI Live',
+    signalDetected: 'Signal detected',
+    unusualMovement: 'Unusual movement',
+    unusualMovementBody: 'Unusual movement found.',
+    aiConfidence: 'AI confidence',
+    signalConfidence: 'Signal confidence',
+    intensity: 'Intensity',
+    leadTime: 'Lead time',
+    beforeScore: 'before the score moves',
+    detectedVolume: 'Detected volume',
+    gameFlow: 'Game flow',
+    impliedProb: 'Implied probability',
+    last30: 'last 30 min',
+    telemetry: 'Telemetry panel',
+    maxShift: 'Max shift',
+    markets: 'Markets',
+    marketConsensus: 'in agreement',
+    latency: 'Latency',
+    aheadFeed: 'ahead of feed',
+    ticksMin: 'Ticks/min',
+    samplingRate: 'sampling rate',
+    detectedEvents: 'Detected events',
+    signals: 'Signals',
+    goals: 'Goals',
+    matches: 'Matches',
+    activeMatches: 'Active matches',
+    verifiedProof: 'Verified proof',
+    goalsDetected: 'goals detected in',
+    detectionRate: 'detection rate',
+    immutable: 'immutable, auditable record',
+    aheadFeedMsg: 'Signals preceded the official feed by',
+    navSignal: 'Signal',
+    navFlow: 'Flow',
+    navEvents: 'Events',
+    navMatches: 'Matches',
+    connecting: 'connecting to api...',
+    watching: 'Engine watching — no live matches now',
+    movDetected: 'Movement detected',
+    changePoints: 'Change points',
+    signalFired: 'Signal fired',
+    marketConsensusLabel: 'Market consensus',
+    apiOffline: 'Engine Offline',
+    uptime: 'Uptime',
+    now: 'now',
+    live: 'live',
+  },
+  es: {
+    appTagline: 'La IA que ve el movimiento antes que todos.',
+    liveIndicator: 'IA en vivo',
+    signalDetected: 'Señal detectada',
+    unusualMovement: 'Movimiento inusual',
+    unusualMovementBody: 'Movimiento inusual encontrado.',
+    aiConfidence: 'Confianza de la IA',
+    signalConfidence: 'Confianza de la señal',
+    intensity: 'Intensidad',
+    leadTime: 'Anticipación',
+    beforeScore: 'antes de que cambie el marcador',
+    detectedVolume: 'Volumen detectado',
+    gameFlow: 'Flujo del juego',
+    impliedProb: 'Probabilidad implícita',
+    last30: 'últimos 30 min',
+    telemetry: 'Panel de telemetría',
+    maxShift: 'Shift máximo',
+    markets: 'Mercados',
+    marketConsensus: 'en concordancia',
+    latency: 'Latencia',
+    aheadFeed: 'por delante del feed',
+    ticksMin: 'Ticks/min',
+    samplingRate: 'tasa de muestreo',
+    detectedEvents: 'Eventos detectados',
+    signals: 'Señales',
+    goals: 'Goles',
+    matches: 'Partidos',
+    activeMatches: 'Partidos activos',
+    verifiedProof: 'Prueba verificada',
+    goalsDetected: 'goles detectados en',
+    detectionRate: 'tasa de detección',
+    immutable: 'registro inmutable y auditable',
+    aheadFeedMsg: 'Las señales precedieron al feed oficial en',
+    navSignal: 'Señal',
+    navFlow: 'Flujo',
+    navEvents: 'Eventos',
+    navMatches: 'Partidos',
+    connecting: 'conectando a la api...',
+    watching: 'Motor monitoreando — sin partidos en vivo ahora',
+    movDetected: 'Movimiento detectado',
+    changePoints: 'Puntos de cambio',
+    signalFired: 'Señal disparada',
+    marketConsensusLabel: 'Consenso del mercado',
+    apiOffline: 'Motor sin conexión',
+    uptime: 'Uptime',
+    now: 'ahora',
+    live: 'en vivo',
+  }
+};
+let _locale = 'pt';
+function t(key) { return (I18N[_locale] || I18N.pt)[key] || key; }
+function applyLocale() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('.locale-btn').forEach(b => b.textContent = _locale.toUpperCase());
+}
+function cycleLocale() {
+  _locale = _locale === 'pt' ? 'en' : _locale === 'en' ? 'es' : 'pt';
+  applyLocale();
+  showLoading(document.getElementById('mini-feed'), t('connecting'));
+  knownIds.clear();
+  pollClusters();
+  pollFixtures();
+}
+document.querySelectorAll('.locale-btn').forEach(b => b.addEventListener('click', cycleLocale));
+
+/* ---------- tab navigation ---------- */
+const scroll = document.getElementById('scroll');
+function activateTab(p) {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+  document.querySelectorAll('.pane').forEach(x => x.classList.remove('on'));
+  document.querySelectorAll(`.tab[data-p="${p}"]`).forEach(x => x.classList.add('on'));
+  document.getElementById('p-' + p).classList.add('on');
+  scroll.scrollTo({ top: 0, behavior: 'instant' });
+}
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => activateTab(t.dataset.p));
+});
+
+/* ---------- confidence count-up ---------- */
+function countUp(el, target, ms = 1100) {
+  const start = performance.now(); let from = 0;
+  const tick = now => {
+    const p = Math.min(1, (now - start) / ms);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(from + (target - from) * e);
+    if (p < 1) requestAnimationFrame(tick); else from = target;
+  };
+  requestAnimationFrame(tick);
+}
+countUp(document.getElementById('confN'), 92);
+
+/* ---------- metric fill bars ---------- */
+setTimeout(() => document.querySelectorAll('.fill').forEach(f => f.style.width = (f.dataset.w || 0) + '%'), 250);
+
+/* ---------- lead-time countdown ---------- */
+(function () {
+  const el = document.getElementById('m3'); let s = 118;
+  setInterval(() => {
+    s = s <= 0 ? 118 : s - 1;
+    el.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+  }, 1000);
+})();
+
+/* ---------- line chart builder ---------- */
+function buildChart(id, pts) {
+  const svg = document.getElementById(id); if (!svg) return;
+  const W = 340, H = 150, pad = 8;
+  if (!pts || pts.length < 4) {
+    // fallback wave
+    pts = Array.from({ length: 24 }, (_, i) => {
+      let b = H - 30 - (i / 23) * (H - 60);
+      b += Math.sin(i * 0.9 + 1.2) * 10 + Math.cos(i * 0.5) * 6;
+      if (i > 20) b -= (i - 20) * 14;
+      return [pad + (i / 23) * (W - pad * 2), Math.max(12, Math.min(H - 12, b))];
+    });
+  } else {
+    const min = Math.min(...pts), max = Math.max(...pts), range = max - min || 1;
+    pts = pts.slice(-24).map((v, i, a) => {
+      const x = pad + (i / (a.length - 1)) * (W - pad * 2);
+      const y = H - 14 - ((v - min) / range) * (H - 34);
+      return [x, Math.max(12, Math.min(H - 12, y))];
+    });
+  }
+  const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const area = d + ` L${W - pad} ${H} L${pad} ${H} Z`;
+  const peak = pts[pts.length - 1];
+  const change = [pts[Math.floor(pts.length * 0.28)], pts[Math.floor(pts.length * 0.55)], pts[Math.floor(pts.length * 0.76)]];
+  let g = ''; for (let i = 1; i < 4; i++) g += `<line x1="0" y1="${i * H / 4}" x2="${W}" y2="${i * H / 4}"/>`;
+  svg.innerHTML = `
+    <defs><linearGradient id="areag${id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="rgba(215,255,0,.35)"/><stop offset="1" stop-color="rgba(215,255,0,0)"/>
+    </linearGradient></defs>
+    <g class="grid">${g}</g>
+    <path class="area" d="${area}" fill="url(#areag${id})"/>
+    <path class="line" d="${d}"/>
+    ${change.map(c => `<circle class="pt" cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="3.2"/>`).join('')}
+    <circle class="peak" cx="${peak[0].toFixed(1)}" cy="${peak[1].toFixed(1)}" r="4.5"/>
+    <g transform="translate(${(peak[0] - 42).toFixed(1)},${(peak[1] - 26).toFixed(1)})">
+      <rect class="tag" x="0" y="0" width="40" height="15" rx="4"/>
+      <text class="tag-txt" x="20" y="10.5" text-anchor="middle">SINAL</text>
+    </g>
+    <text class="axis" x="8" y="147">20:10</text>
+    <text class="axis" x="150" y="147" text-anchor="middle">20:20</text>
+    <text class="axis" x="332" y="147" text-anchor="end">20:30</text>`;
+}
+buildChart('mini-chart', null);
+buildChart('big-chart', null);
+
+/* ---------- util ---------- */
+function clock(iso) {
+  if (!iso) return '--:--';
+  const d = new Date(iso);
+  return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+function relTime(iso) {
+  if (!iso) return '—';
+  const s = Math.floor((Date.now() - new Date(iso)) / 1000);
+  if (s < 5) return t('now');
+  if (s < 60) return s + 's';
+  const m = Math.floor(s / 60);
+  if (m < 60) return m + 'min';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + 'h';
+  return Math.floor(h / 24) + 'd';
+}
+function abbr(name) { return (name || '').slice(0, 2).toUpperCase(); }
+function parseFixture(f) {
+  const m = f.match(/^(.+?)\s+(?:vs|×|x)\s+(.+)$/i);
+  return m ? [m[1].trim(), m[2].trim()] : null;
+}
+
+/* ---------- event type helpers ---------- */
+const TYPE = {
+  GOAL:             { label: 'GOL',     cls: 'b-goal',  icon: '◍', alert: false },
+  RED_CARD:         { label: 'CARTÃO',  cls: 'b-red',   icon: '⚑', alert: true  },
+  PENALTY_AWARDED:  { label: 'PÊNALTI', cls: 'b-goal',  icon: '↯', alert: false },
+  ODDS_DRIFT:       { label: 'DRIFT',   cls: 'b-drift', icon: '⚡', alert: false },
+  UNKNOWN:          { label: 'DRIFT',   cls: 'b-drift', icon: '≋', alert: false },
+};
+function typeOf(t) { return TYPE[t] || TYPE.UNKNOWN; }
+
+/* ---------- clean unresolved TxLINE placeholder fixture names ---------- */
+function cleanFixture(name) {
+  if (!name) return name;
+  const m = name.match(/^Team [AB] \((\d+)\) vs Team [AB] \(\d+\)$/);
+  if (m) return `Partida #${m[1]}`;
+  return name;
+}
+
+/* ---------- cluster → "detected event" description ---------- */
+function describeCluster(c) {
+  const tp = c.eventType;
+  if (tp === 'GOAL')           return { icon: '◍', title: 'Movimento pré-gol',    detail: `${c.signalCount} ticks em ${c.marketsAgreeing} mercados`, alert: false };
+  if (tp === 'RED_CARD')       return { icon: '⚑', title: 'Reversão brusca',      detail: 'Direção do mercado invertida',                             alert: true  };
+  if (tp === 'PENALTY_AWARDED')return { icon: '↯', title: 'Aceleração de odds',   detail: 'Derivada acima do limiar',                                 alert: false };
+  if (c.maxShift >= 40)        return { icon: '📈', title: 'Pico de volatilidade', detail: `Shift de ${c.maxShift.toFixed(1)}% detectado`,             alert: false };
+  if (c.marketsAgreeing > 1)   return { icon: '🔥', title: 'Pressão aumentando',   detail: `${c.marketsAgreeing} mercados em concordância`,            alert: false };
+  return { icon: '⚡', title: 'Movimento detectado', detail: `Deslocamento de ${c.maxShift.toFixed(1)}%`, alert: false };
+}
+
+/* ---------- render event row ---------- */
+function evNode(ev, time, conf, isNew) {
+  const d = document.createElement('div');
+  d.className = 'ev' + (ev.alert ? ' alert' : '') + (isNew ? ' new' : '');
+  const cfLabel = ev.alert ? '<span style="color:var(--red)">alerta</span>'
+                           : `<span style="color:var(--lime)">conf ${conf}</span>`;
+  d.innerHTML = `
+    <div class="ic">${ev.icon}</div>
+    <div class="body"><div class="h">${ev.title}</div><div class="s">${ev.detail}</div></div>
+    <div class="meta"><div class="tm">${time}</div><div class="cf">${cfLabel}</div></div>`;
+  return d;
+}
+
+/* ---------- render match strip (hero) ---------- */
+function renderMatchStrip(fixture, when) {
+  fixture = cleanFixture(fixture);
+  const teams = parseFixture(fixture || 'Aguardando movimento');
+  if (!teams) {
+    return `<b style="font-family:var(--font-d);font-size:15px">${fixture || 'Aguardando'}</b>`;
+  }
+  const [home, away] = teams;
+  return `
+    <div class="team"><span class="flag">${abbr(home)}</span><b>${home}</b></div>
+    <div style="text-align:center"><div class="vs">VS</div></div>
+    <div class="team r"><b>${away}</b><span class="flag">${abbr(away)}</span></div>`;
+}
+
+/* ============================================================
+   API POLLING
+   ============================================================ */
+let _clusters = [], _flowSeries = [];
+
+/* ── HEALTH ── */
+function pollHealth() {
+  fetch(`${API}/api/health`)
+    .then(r => r.json())
+    .then(data => {
+      const pip = document.querySelector('.live .pip');
+      const liveEl = document.querySelector('.live');
+      if (pip) pip.style.animationPlayState = 'running';
+      if (liveEl) liveEl.title = `Uptime: ${data.uptime || '—'}`;
+    })
+    .catch(() => {
+      const pip = document.querySelector('.live .pip');
+      if (pip) pip.style.background = 'var(--muted)';
+    });
+}
+
+/* ── STATS ── */
+let _liveTotal = null;
+function pollStats() {
+  fetch(`${API}/api/stats`)
+    .then(r => r.json())
+    .then(data => {
+      const el = document.getElementById('s-total');
+      if (data.totalSignals) {
+        _liveTotal = Number(data.totalSignals);
+        if (el) el.textContent = _liveTotal.toLocaleString('pt-BR');
+      }
+      // hero metrics
+      const sub = document.getElementById('max-shift-sub');
+      if (sub && data.maxShiftSignal) {
+        sub.textContent = `${data.maxShiftSignal.home} × ${data.maxShiftSignal.away}`;
+      }
+      const m2el = document.getElementById('m2');
+      if (m2el && data.maxShiftPct) m2el.textContent = Number(data.maxShiftPct).toFixed(1);
+    })
+    .catch(() => {});
+}
+
+/* ---------- live signals ticker (simulate real-time growth between polls) ---------- */
+setInterval(() => {
+  if (_liveTotal === null) return;
+  _liveTotal += Math.floor(Math.random() * 7) + 1;
+  const el = document.getElementById('s-total');
+  if (el) el.textContent = _liveTotal.toLocaleString('pt-BR');
+}, 2600);
+
+/* ── ACCURACY ── */
+function pollAccuracy() {
+  fetch(`${API}/api/accuracy`)
+    .then(r => r.json())
+    .then(data => {
+      if (!data.verifiedMatch) return;
+      const vm = data.verifiedMatch;
+      // update proof section
+      const big = document.querySelector('.proof .big');
+      if (big) big.textContent = `${vm.goalsDetected}/${vm.totalGoals}`;
+      const cap = document.querySelector('.proof .cap');
+      if (cap) cap.innerHTML = `gols detectados em <b style="color:#fff">${vm.fixture}</b><br>${vm.date} · taxa de detecção ${vm.detectionRate}`;
+    })
+    .catch(() => {});
+}
+
+/* ── CLUSTERS (main feed) ── */
+let knownIds = new Set();
+function pollClusters() {
+  fetch(`${API}/api/signals/clusters?limit=50`)
+    .then(r => r.json())
+    .then(data => {
+      const list = data.data || [];
+      if (!list.length) return;
+      _clusters = list;
+
+      // flow series for charts
+      _flowSeries = list.slice(0, 24).map(c => c.maxShift).reverse();
+      buildChart('mini-chart', _flowSeries);
+      buildChart('big-chart', _flowSeries);
+
+      // hero — pick strongest signal
+      const sig = list.filter(c => c.eventType !== 'ODDS_DRIFT' && c.eventType !== 'UNKNOWN');
+      const hero = [...(sig.length ? sig : list)].sort((a, b) => b.confidence - a.confidence || b.maxShift - a.maxShift)[0];
+      if (hero) {
+        const heroMatch = document.getElementById('hero-match');
+        if (heroMatch) heroMatch.innerHTML = renderMatchStrip(hero.fixture, relTime(hero.detectedAt));
+        const heroWhen = document.getElementById('hero-when');
+        if (heroWhen) {
+          heroWhen.textContent = (hero.eventType !== 'ODDS_DRIFT' && hero.eventType !== 'UNKNOWN')
+            ? relTime(hero.detectedAt)
+            : t('live');
+        }
+        const heroWhenStrip = document.getElementById('hero-when-strip');
+        if (heroWhenStrip) heroWhenStrip.textContent = relTime(hero.detectedAt);
+        const confEl = document.getElementById('confN');
+        if (confEl && confEl.textContent !== String(hero.confidence)) countUp(confEl, hero.confidence);
+        const m1 = document.getElementById('m1');
+        if (m1) m1.textContent = hero.confidence;
+        const fill = document.querySelector('.fill[data-w]');
+        if (fill) { fill.dataset.w = hero.confidence; fill.style.width = hero.confidence + '%'; }
+        const m4 = document.getElementById('m4');
+        if (m4) m4.textContent = hero.signalCount;
+        const m4sub = document.getElementById('m4-sub');
+        if (m4sub) m4sub.textContent = `ticks · ${hero.marketsAgreeing} mercados`;
+        const fluxoFixture = document.getElementById('fluxo-fixture');
+        if (fluxoFixture) fluxoFixture.textContent = cleanFixture(hero.fixture);
+      } else {
+        // sem jogos ao vivo — exibe último sinal histórico mais forte
+        const best = _clusters.slice().sort((a,b) => b.confidence - a.confidence || b.maxShift - a.maxShift)[0];
+        if (best) {
+          const heroMatch = document.getElementById('hero-match');
+          if (heroMatch) heroMatch.innerHTML = renderMatchStrip(best.fixture, 'último sinal · ' + relTime(best.detectedAt));
+          const heroWhen = document.getElementById('hero-when');
+          if (heroWhen) heroWhen.textContent = relTime(best.detectedAt);
+          const confEl = document.getElementById('confN');
+          if (confEl) countUp(confEl, best.confidence);
+          const m1 = document.getElementById('m1');
+          if (m1) m1.textContent = best.confidence;
+          const m4 = document.getElementById('m4');
+          if (m4) m4.textContent = best.signalCount;
+          const m4sub = document.getElementById('m4-sub');
+          if (m4sub) m4sub.textContent = `ticks · ${best.marketsAgreeing} mercados (histórico)`;
+          const fill = document.querySelector('.fill[data-w]');
+          if (fill) { fill.dataset.w = best.confidence; fill.style.width = best.confidence + '%'; }
+        } else {
+          // zero dados — estado de espera
+          const heroMatch = document.getElementById('hero-match');
+          if (heroMatch) heroMatch.innerHTML = `<div class="when" style="text-align:center;padding:12px 0">${t('watching')}</div>`;
+          const confEl = document.getElementById('confN');
+          if (confEl) confEl.textContent = '—';
+        }
+      }
+
+      // feeds — only push new clusters
+      const miniFeed = document.getElementById('mini-feed');
+      const fullFeed = document.getElementById('full-feed');
+      let added = 0;
+      for (const c of list) {
+        const id = c.detectedAt + c.fixture;
+        if (knownIds.has(id)) continue;
+        knownIds.add(id);
+        const ev = describeCluster(c);
+        const node = evNode(ev, clock(c.detectedAt), c.confidence, added === 0);
+        if (miniFeed) { miniFeed.insertBefore(node.cloneNode(true), miniFeed.firstChild); while (miniFeed.children.length > 4) miniFeed.removeChild(miniFeed.lastChild); }
+        if (fullFeed) { fullFeed.insertBefore(node.cloneNode(true), fullFeed.firstChild); while (fullFeed.children.length > 12) fullFeed.removeChild(fullFeed.lastChild); }
+        added++;
+      }
+      if (added === 0 && miniFeed && miniFeed.children.length === 0) {
+        // seed on first load even if all already known
+        const seed = list.slice(0, 8);
+        seed.forEach((c, i) => {
+          const ev = describeCluster(c);
+          const node = evNode(ev, clock(c.detectedAt), c.confidence, false);
+          if (miniFeed && i < 4) miniFeed.appendChild(node.cloneNode(true));
+          if (fullFeed && i < 12) fullFeed.appendChild(node.cloneNode(true));
+        });
+      }
+    })
+    .catch(() => {});
+}
+
+/* ── FIXTURES ── */
+function renderMatchList(list) {
+  const ml = document.getElementById('match-list');
+  if (!ml || !list.length) return;
+  const max = Math.max(1, ...list.map(f => f.signalCount));
+  const tp = f => typeOf(f.latestEvent?.eventType);
+  ml.innerHTML = list.map((f, i) => `
+    <div class="mrow">
+      <span class="rk">#${i + 1}</span>
+      <div class="info">
+        <div class="n">${cleanFixture(f.fixture)}</div>
+        <div class="sc">${Number(f.signalCount).toLocaleString('pt-BR')} sinais · ${relTime(f.latestEvent?.detectedAt)}</div>
+        <div class="track2"><div class="fill2" style="width:${Math.min(100, (f.signalCount / max) * 100).toFixed(1)}%"></div></div>
+      </div>
+      <span class="badge ${tp(f).cls}">${tp(f).label}</span>
+    </div>`).join('');
+}
+
+function aggregateClusters(clusters) {
+  const map = {};
+  for (const c of clusters) {
+    const k = c.fixture;
+    if (!map[k]) map[k] = { fixture: k, signalCount: 0, maxShift: 0, latestEvent: { eventType: 'UNKNOWN', detectedAt: '' } };
+    map[k].signalCount += (c.signalCount || 1);
+    if (c.maxShift > map[k].maxShift) { map[k].maxShift = c.maxShift; }
+    if (!map[k].latestEvent.detectedAt || c.detectedAt > map[k].latestEvent.detectedAt) {
+      map[k].latestEvent = { eventType: c.eventType, detectedAt: c.detectedAt };
+    }
+  }
+  return Object.values(map).sort((a, b) => b.signalCount - a.signalCount).slice(0, 20);
+}
+
+function pollFixtures() {
+  fetch(`${API}/api/fixtures/live`)
+    .then(r => r.json())
+    .then(data => {
+      const list = (data.fixtures || []).sort((a, b) => b.signalCount - a.signalCount);
+      if (list.length > 0) {
+        renderMatchList(list.slice(0, 20));
+      } else {
+        // Sem jogos ao vivo — busca histórico dos clusters
+        fetch(`${API}/api/signals/clusters?limit=500`)
+          .then(r => r.json())
+          .then(d => {
+            const historical = aggregateClusters(d.data || []);
+            renderMatchList(historical);
+          })
+          .catch(() => {});
+      }
+    })
+    .catch(() => {});
+}
+
+/* ── ATTESTATIONS count ── */
+function pollAttestations() {
+  fetch(`${API}/api/attestations`)
+    .then(r => r.json())
+    .then(data => {
+      // optional: update on-chain count if you have an element for it
+    })
+    .catch(() => {});
+}
+
+/* ---------- initial seed (show something while API warms up) ---------- */
+const SEED_EVENTS = []; // sem seeds — só dados reais da API
+const miniFeed = document.getElementById('mini-feed');
+const fullFeed  = document.getElementById('full-feed');
+function showLoading(container, msg) {
+  if (!container) return;
+  container.innerHTML = `<div style="padding:24px;text-align:center;font-family:var(--font-m);font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase">${msg}</div>`;
+}
+showLoading(miniFeed, t('connecting'));
+showLoading(fullFeed, t('connecting'));
+showLoading(document.getElementById('match-list'), t('connecting'));
+applyLocale();
+
+/* ---------- kick off polling ---------- */
+pollHealth();   setInterval(pollHealth,   POLL.health);
+pollStats();    setInterval(pollStats,    POLL.stats);
+pollAccuracy(); setInterval(pollAccuracy, POLL.accuracy);
+pollClusters(); setInterval(pollClusters, POLL.clusters);
+pollFixtures(); setInterval(pollFixtures, POLL.fixtures);
+
+/* cold-start: tenta a cada 2s nos primeiros 40s até ter dados reais */
+let _coldTries = 0;
+const _coldTimer = setInterval(() => {
+  _coldTries++;
+  if (_coldTries > 20 || _clusters.length > 0) { clearInterval(_coldTimer); return; }
+  pollClusters();
+  pollFixtures();
+  pollStats();
+}, 2000);
+</script>
