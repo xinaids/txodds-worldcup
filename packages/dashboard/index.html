@@ -782,14 +782,14 @@ function parseFixture(f) {
 }
 
 /* ---------- event type helpers ---------- */
-const TYPE = {
-  GOAL:             { label: 'GOL',     cls: 'b-goal',  icon: '◍', alert: false },
-  RED_CARD:         { label: 'CARTÃO',  cls: 'b-red',   icon: '⚑', alert: true  },
-  PENALTY_AWARDED:  { label: 'PÊNALTI', cls: 'b-goal',  icon: '↯', alert: false },
-  ODDS_DRIFT:       { label: 'DRIFT',   cls: 'b-drift', icon: '⚡', alert: false },
-  UNKNOWN:          { label: 'DRIFT',   cls: 'b-drift', icon: '≋', alert: false },
-};
-function typeOf(t) { return TYPE[t] || TYPE.UNKNOWN; }
+function TYPE() { const l = _locale; return {
+  GOAL:            { label: l==='en'?'GOAL':'GOL',                              cls: 'b-goal',  icon: '◍', alert: false },
+  RED_CARD:        { label: l==='en'?'CARD':l==='es'?'TARJETA':'CARTÃO',       cls: 'b-red',   icon: '⚑', alert: true  },
+  PENALTY_AWARDED: { label: l==='en'?'PENALTY':l==='es'?'PENAL':'PÊNALTI',     cls: 'b-goal',  icon: '↯', alert: false },
+  ODDS_DRIFT:      { label: 'DRIFT',                                            cls: 'b-drift', icon: '⚡', alert: false },
+  UNKNOWN:         { label: 'DRIFT',                                            cls: 'b-drift', icon: '≋', alert: false },
+};}
+function typeOf(tp2) { const m = TYPE(); return m[tp2] || m.UNKNOWN; }
 
 /* ---------- clean unresolved TxLINE placeholder fixture names ---------- */
 function cleanFixture(name) {
@@ -802,9 +802,13 @@ function cleanFixture(name) {
 /* ---------- cluster → "detected event" description ---------- */
 function describeCluster(c) {
   const tp = c.eventType;
-  if (tp === 'GOAL')           return { icon: '◍', title: 'Movimento pré-gol',    detail: `${c.signalCount} ticks em ${c.marketsAgreeing} mercados`, alert: false };
-  if (tp === 'RED_CARD')       return { icon: '⚑', title: 'Reversão brusca',      detail: 'Direção do mercado invertida',                             alert: true  };
-  if (tp === 'PENALTY_AWARDED')return { icon: '↯', title: 'Aceleração de odds',   detail: 'Derivada acima do limiar',                                 alert: false };
+  const _tl = (p,e,s) => _locale==='en'?e:_locale==='es'?s:p;
+  if (tp === 'GOAL')           return { icon: '◍', title: _tl('Movimento pré-gol','Pre-goal movement','Movimiento pre-gol'), detail: c.signalCount+' ticks · '+c.marketsAgreeing+' '+_tl('mercados','markets','mercados'), alert: false };
+  if (tp === 'RED_CARD')       return { icon: '⚑', title: _tl('Reversão brusca','Sharp reversal','Reversión brusca'), detail: _tl('Direção do mercado invertida','Market direction inverted','Dirección invertida'), alert: true };
+  if (tp === 'PENALTY_AWARDED')return { icon: '↯', title: _tl('Aceleração de odds','Odds acceleration','Aceleración de odds'), detail: _tl('Derivada acima do limiar','Derivative above threshold','Derivada sobre el umbral'), alert: false };
+  if (c.maxShift >= 40)        return { icon: '📈', title: _tl('Pico de volatilidade','Volatility spike','Pico de volatilidad'), detail: 'Shift '+c.maxShift.toFixed(1)+'% '+_tl('detectado','detected','detectado'), alert: false };
+  if (c.marketsAgreeing > 1)   return { icon: '🔥', title: _tl('Pressão aumentando','Pressure building','Presión aumentando'), detail: c.marketsAgreeing+' '+_tl('mercados','markets','mercados')+' '+_tl('em concordância','in agreement','en concordancia'), alert: false };
+  return { icon: '⚡', title: _tl('Movimento detectado','Movement detected','Movimiento detectado'), detail: _tl('Deslocamento','Shift','Desplazamiento')+' '+c.maxShift.toFixed(1)+'%', alert: false };
   if (c.maxShift >= 40)        return { icon: '📈', title: 'Pico de volatilidade', detail: `Shift de ${c.maxShift.toFixed(1)}% detectado`,             alert: false };
   if (c.marketsAgreeing > 1)   return { icon: '🔥', title: 'Pressão aumentando',   detail: `${c.marketsAgreeing} mercados em concordância`,            alert: false };
   return { icon: '⚡', title: 'Movimento detectado', detail: `Deslocamento de ${c.maxShift.toFixed(1)}%`, alert: false };
@@ -1021,7 +1025,7 @@ function renderMatchList(list) {
       <span class="rk">#${i + 1}</span>
       <div class="info">
         <div class="n">${cleanFixture(f.fixture)}</div>
-        <div class="sc">${Number(f.signalCount).toLocaleString('pt-BR')} sinais · ${relTime(f.latestEvent?.detectedAt)}</div>
+        <div class="sc">${Number(f.signalCount).toLocaleString('pt-BR')} ${_locale==='en'?'signals':_locale==='es'?'señales':'sinais'} · ${relTime(f.latestEvent?.detectedAt)}</div>
         <div class="track2"><div class="fill2" style="width:${Math.min(100, (f.signalCount / max) * 100).toFixed(1)}%"></div></div>
       </div>
       <span class="badge ${tp(f).cls}">${tp(f).label}</span>
