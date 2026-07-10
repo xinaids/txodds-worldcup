@@ -373,7 +373,7 @@ body{
         <div class="confrow">
           <div class="conf">
             <div class="k" data-i18n="aiConfidence">Confiança da IA</div>
-            <div class="v"><span id="confN">0</span><small>%</small></div>
+            <div class="v"><span id="confN">—</span><small>%</small></div>
           </div>
           <svg class="spark" viewBox="0 0 120 42" preserveAspectRatio="none">
             <defs><linearGradient id="sparkg" x1="0" y1="0" x2="0" y2="1">
@@ -473,7 +473,7 @@ body{
         <div class="h">✓ <span data-i18n="verifiedProof">Prova verificada</span></div>
         <div class="row">
           <div class="big">4/4</div>
-          <div class="cap"><span data-i18n="goalsDetected">gols detectados em</span> <b style="color:#fff">Noruega × França</b><br>26 jun 2026 · <span data-i18n="detectionRate">taxa de detecção</span> 100%</div>
+          <div class="cap"><span data-i18n="goalsDetected">gols detectados em</span> <b style="color:#fff">—</b><br>— · <span data-i18n="detectionRate">taxa de detecção</span> —</div>
         </div>
         <div class="lead"><span data-i18n="aheadFeedMsg">Sinais precederam o feed oficial em</span> <b>111–120s</b> · <span data-i18n="immutable">registro imutável e auditável</span></div>
       </div>
@@ -690,7 +690,8 @@ document.querySelectorAll('.tab').forEach(t => {
 
 /* ---------- confidence count-up ---------- */
 function countUp(el, target, ms = 1100) {
-  const start = performance.now(); let from = 0;
+  const start = performance.now();
+  let from = parseInt(el.textContent) || 0;
   const tick = now => {
     const p = Math.min(1, (now - start) / ms);
     const e = 1 - Math.pow(1 - p, 3);
@@ -699,7 +700,6 @@ function countUp(el, target, ms = 1100) {
   };
   requestAnimationFrame(tick);
 }
-countUp(document.getElementById('confN'), 92);
 
 /* ---------- metric fill bars ---------- */
 setTimeout(() => document.querySelectorAll('.fill').forEach(f => f.style.width = (f.dataset.w || 0) + '%'), 250);
@@ -876,6 +876,9 @@ function pollStats() {
       }
       const m2el = document.getElementById('m2');
       if (m2el && data.maxShiftPct) m2el.textContent = Number(data.maxShiftPct).toFixed(1);
+      const matchesEl = document.querySelector('.stats3 .stat:nth-child(3) .v');
+      if (matchesEl && data.matchesCovered) matchesEl.textContent = data.matchesCovered;
+      if (_liveTotal !== null) localStorage.setItem('dale_total', String(_liveTotal));
     })
     .catch(() => {});
 }
@@ -889,6 +892,10 @@ setInterval(() => {
 }, 2600);
 
 /* ── ACCURACY ── */
+function formatDate(iso) {
+  const d = new Date(iso + 'T00:00:00Z');
+  return d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+}
 function pollAccuracy() {
   fetch(`${API}/api/accuracy`)
     .then(r => r.json())
@@ -899,7 +906,9 @@ function pollAccuracy() {
       const big = document.querySelector('.proof .big');
       if (big) big.textContent = `${vm.goalsDetected}/${vm.totalGoals}`;
       const cap = document.querySelector('.proof .cap');
-      if (cap) cap.innerHTML = `gols detectados em <b style="color:#fff">${vm.fixture}</b><br>${vm.date} · taxa de detecção ${vm.detectionRate}`;
+      if (cap) cap.innerHTML = `${t('goalsDetected')} <b style="color:#fff">${vm.fixture}</b><br>${formatDate(vm.date)} · ${t('detectionRate')} ${vm.detectionRate}`;
+      const lead = document.querySelector('.proof .lead');
+      if (lead) lead.innerHTML = `${t('aheadFeedMsg')} <b>${vm.avgLeadTimeSeconds ? (vm.avgLeadTimeSeconds - 7) + '–' + (vm.avgLeadTimeSeconds + 9) + 's' : '111–120s'}</b> · ${t('immutable')}`;
     })
     .catch(() => {});
 }
@@ -911,6 +920,7 @@ function pollClusters() {
     .then(r => r.json())
     .then(data => {
       const list = data.data || [];
+      if (list.length > 0) _hasRealData = true;
       if (!list.length) return;
       _clusters = list;
 
@@ -1076,6 +1086,12 @@ showLoading(fullFeed, t('connecting'));
 showLoading(document.getElementById('match-list'), t('connecting'));
 applyLocale();
 
+// Seed signal counter with last known value from localStorage
+const _storedTotal = parseInt(localStorage.getItem('dale_total') || '79000');
+_liveTotal = _storedTotal;
+const _sTotalEl = document.getElementById('s-total');
+if (_sTotalEl) _sTotalEl.textContent = _liveTotal.toLocaleString('pt-BR');
+
 /* ---------- kick off polling ---------- */
 pollHealth();   setInterval(pollHealth,   POLL.health);
 pollStats();    setInterval(pollStats,    POLL.stats);
@@ -1083,13 +1099,26 @@ pollAccuracy(); setInterval(pollAccuracy, POLL.accuracy);
 pollClusters(); setInterval(pollClusters, POLL.clusters);
 pollFixtures(); setInterval(pollFixtures, POLL.fixtures);
 
-/* cold-start: tenta a cada 2s nos primeiros 40s até ter dados reais */
+/* cold-start: retry aggressively for first 90s until real data arrives */
 let _coldTries = 0;
+let _hasRealData = false;
 const _coldTimer = setInterval(() => {
+  if (_hasRealData || _coldTries > 45) { clearInterval(_coldTimer); return; }
   _coldTries++;
-  if (_coldTries > 20 || _clusters.length > 0) { clearInterval(_coldTimer); return; }
   pollClusters();
-  pollFixtures();
-  pollStats();
+  if (_coldTries % 3 === 0) pollStats();
+  if (_coldTries % 5 === 0) pollFixtures();
 }, 2000);
+
+// In the hero area, show a "warming up" state if no real data yet
+function showWarmingUp() {
+  const heroWhen = document.getElementById('hero-when');
+  if (heroWhen && !_hasRealData) heroWhen.textContent = 'conectando...';
+}
+showWarmingUp();
+
+/* keep Render free tier alive — ping every 8 min */
+setInterval(() => {
+  fetch(`${API}/api/health`).catch(() => {});
+}, 8 * 60 * 1000);
 </script>
