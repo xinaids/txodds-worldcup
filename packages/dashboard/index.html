@@ -1097,6 +1097,60 @@ const _sTotalEl = document.getElementById('s-total');
 if (_sTotalEl) _sTotalEl.textContent = _liveTotal.toLocaleString('pt-BR');
 
 /* ---------- kick off polling ---------- */
+/* snapshot fallback — loads instantly before API warms up */
+Promise.all([
+  fetch('/snapshot-clusters.json').then(r=>r.json()),
+  fetch('/snapshot-stats.json').then(r=>r.json()),
+  fetch('/snapshot-accuracy.json').then(r=>r.json()),
+  fetch('/snapshot-fixtures.json').then(r=>r.json()),
+]).then(([clusters,stats,accuracy,fixtures])=>{
+  if(clusters.data&&clusters.data.length){
+    const list=clusters.data;
+    _clusters=list;
+    _flowSeries=list.slice(0,24).map(c=>c.maxShift).reverse();
+    buildChart('mini-chart',_flowSeries);buildChart('big-chart',_flowSeries);
+    const recent=list.filter(c=>(Date.now()-new Date(c.detectedAt))<48*60*60*1000);
+    const sig=recent.filter(c=>c.eventType!=='ODDS_DRIFT'&&c.eventType!=='UNKNOWN');
+    const pool=sig.length?sig:(recent.length?recent:list);
+    const hero=[...pool].sort((a,b)=>b.confidence-a.confidence||b.maxShift-a.maxShift)[0];
+    if(hero){
+      const hm=document.getElementById('hero-match');
+      if(hm)hm.innerHTML=renderMatchStrip(hero.fixture,relTime(hero.detectedAt));
+      const hw=document.getElementById('hero-when');
+      if(hw)hw.textContent=hero.eventType!=='ODDS_DRIFT'&&hero.eventType!=='UNKNOWN'?relTime(hero.detectedAt):t('live');
+      const hws=document.getElementById('hero-when-strip');
+      if(hws)hws.textContent=relTime(hero.detectedAt);
+      const ce=document.getElementById('confN');if(ce)countUp(ce,hero.confidence);
+      const m1=document.getElementById('m1');if(m1)m1.textContent=hero.confidence;
+      const m2=document.getElementById('m2');if(m2)m2.textContent=hero.maxShift.toFixed(1);
+      const m4=document.getElementById('m4');if(m4)m4.textContent=hero.signalCount;
+      const m4s=document.getElementById('m4-sub');if(m4s)m4s.textContent='ticks · '+hero.marketsAgreeing+' mercados';
+      const ff=document.getElementById('fluxo-fixture');if(ff)ff.textContent=cleanFixture(hero.fixture);
+      const fi=document.querySelector('.fill[data-w]');if(fi){fi.dataset.w=hero.confidence;fi.style.width=hero.confidence+'%';}
+    }
+    const mf=document.getElementById('mini-feed');const ff2=document.getElementById('full-feed');
+    if(mf)mf.innerHTML='';if(ff2)ff2.innerHTML='';
+    list.slice(0,12).forEach((c,i)=>{
+      const ev=describeCluster(c);const node=evNode(ev,clock(c.detectedAt),c.confidence,false);
+      if(mf&&i<4)mf.appendChild(node.cloneNode(true));
+      if(ff2&&i<12)ff2.appendChild(node.cloneNode(true));
+    });
+  }
+  if(stats.totalSignals){
+    _liveTotal=stats.totalSignals;
+    const el=document.getElementById('s-total');if(el)el.textContent=_liveTotal.toLocaleString('pt-BR');
+    const sub=document.getElementById('max-shift-sub');if(sub&&stats.maxShiftSignal)sub.textContent=stats.maxShiftSignal.home+' × '+stats.maxShiftSignal.away;
+    const m2=document.getElementById('m2');if(m2&&stats.maxShiftPct)m2.textContent=Number(stats.maxShiftPct).toFixed(1);
+  }
+  if(accuracy.verifiedMatch){
+    const vm=accuracy.verifiedMatch;
+    const big=document.querySelector('.proof .big');if(big)big.textContent=vm.goalsDetected+'/'+vm.totalGoals;
+    const cap=document.querySelector('.proof .cap');if(cap)cap.innerHTML=t('goalsDetected')+' <b style="color:#fff">'+vm.fixture+'</b><br>'+formatDate(vm.date)+' · '+t('detectionRate')+' '+vm.detectionRate;
+    const lead=document.querySelector('.proof .lead');if(lead)lead.innerHTML=t('aheadFeedMsg')+' <b>111–120s</b> · '+t('immutable');
+  }
+  if(fixtures.fixtures&&fixtures.fixtures.length)renderMatchList(fixtures.fixtures.sort((a,b)=>b.signalCount-a.signalCount));
+}).catch(()=>{});
+
 pollHealth();   setInterval(pollHealth,   POLL.health);
 pollStats();    setInterval(pollStats,    POLL.stats);
 pollAccuracy(); setInterval(pollAccuracy, POLL.accuracy);
